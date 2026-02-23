@@ -1,0 +1,15 @@
+# Python
+___pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Environment variables
+.env
+.venv/
+venv/
+env/
+
+# 0S
+.DS_Store
+Thumbs.db
