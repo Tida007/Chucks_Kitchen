@@ -23,6 +23,16 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
     
     return user
 
+def get_admin_user(current_user: User = Depends(get_current_user)):
+    """Verify current user is admin"""
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required. You do not have permission to perform this action"
+        )
+    
+    return current_user
+
 def get_password_hash(password: str) -> str:
     pwd_bytes = password.encode('utf-8')
     salt = bcrypt.gensalt()

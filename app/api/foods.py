@@ -5,6 +5,8 @@ from typing import List, Optional
 from app.database import get_db
 from app.services import food_service
 from app.schemas.food import CategoryOut, FoodCreate, FoodUpdate, FoodOut
+from app.services.auth_service import get_admin_user
+from app.models.user import User
 
 router = APIRouter(prefix="/foods", tags=["Menu & Foods"])
 
@@ -34,7 +36,7 @@ def get_food(food_id: int, db: Session = Depends(get_db)):
 
 # Admin endpoints (for managing menu items) - these will be protected with authentication in a real app
 @router.post("/", response_model=FoodOut, status_code=status.HTTP_201_CREATED)
-def add_food(food_data: FoodCreate, db: Session = Depends(get_db)):
+def add_food(food_data: FoodCreate, admin_user: User = Depends(get_admin_user), db: Session = Depends(get_db)):
     """Add a new food item to the menu."""
     return food_service.create_food(
         db,
@@ -45,6 +47,6 @@ def add_food(food_data: FoodCreate, db: Session = Depends(get_db)):
     )
 
 @router.patch("/{food_id}", response_model=FoodOut)
-def update_food(food_id: int, food_data: FoodUpdate, db: Session = Depends(get_db)):
+def update_food(food_id: int, food_data: FoodUpdate, admin_user: User = Depends(get_admin_user), db: Session = Depends(get_db)):
     update_dict = food_data.model_dump(exclude_unset=True)
-    return food_service.update_food(db, food_id, **update_dict)
+    return food_service.update_food_details(db, food_id, update_dict)
